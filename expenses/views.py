@@ -90,6 +90,12 @@ class ExpenseViewSet(viewsets.ModelViewSet):
             average_amount=Avg('amount')
         )
         
+        # Manejar valores None cuando no hay gastos
+        if stats['total_amount'] is None:
+            stats['total_amount'] = 0
+        if stats['average_amount'] is None:
+            stats['average_amount'] = 0
+        
         # Gastos por categoría
         by_category = {}
         for choice in Expense.CATEGORY_CHOICES:

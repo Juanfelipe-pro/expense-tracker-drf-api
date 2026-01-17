@@ -96,26 +96,8 @@ class ExpenseSerializer(serializers.ModelSerializer):
         
         return attrs
     
-    def create(self, validated_data):
-        """
-        Crea una nueva instancia de Expense.
-        
-        Automáticamente asigna el usuario del request.
-        
-        Args:
-            validated_data: Datos validados
-            
-        Returns:
-            Expense: Instancia creada
-        """
-        # Obtener el usuario del contexto del serializer
-        # El contexto se pasa desde la vista
-        user = self.context['request'].user
-        
-        # Crear el gasto asignando el usuario
-        expense = Expense.objects.create(user=user, **validated_data)
-        
-        return expense
+    # El método create() no es necesario aquí porque perform_create() en la vista
+    # ya maneja la asignación del usuario. Si se necesita, se puede agregar después.
 
 
 class ExpenseListSerializer(serializers.ModelSerializer):

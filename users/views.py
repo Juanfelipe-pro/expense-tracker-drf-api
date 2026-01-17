@@ -86,27 +86,33 @@ class LoginView(APIView):
         email = serializer.validated_data['email']
         password = serializer.validated_data['password']
         
+        # Verificar si el usuario existe primero
+        try:
+            user = User.objects.get(email=email)
+            # Si el usuario existe pero está inactivo
+            if not user.is_active:
+                return Response({
+                    'error': 'Esta cuenta está desactivada.'
+                }, status=status.HTTP_403_FORBIDDEN)
+        except User.DoesNotExist:
+            user = None
+        
         # Autenticar usuario
         user = authenticate(request, username=email, password=password)
         
         if user is not None:
-            if user.is_active:
-                # Generar tokens
-                refresh = RefreshToken.for_user(user)
-                user_serializer = UserSerializer(user)
-                
-                return Response({
-                    'user': user_serializer.data,
-                    'tokens': {
-                        'refresh': str(refresh),
-                        'access': str(refresh.access_token),
-                    },
-                    'message': 'Login exitoso'
-                }, status=status.HTTP_200_OK)
-            else:
-                return Response({
-                    'error': 'Esta cuenta está desactivada.'
-                }, status=status.HTTP_403_FORBIDDEN)
+            # Generar tokens
+            refresh = RefreshToken.for_user(user)
+            user_serializer = UserSerializer(user)
+            
+            return Response({
+                'user': user_serializer.data,
+                'tokens': {
+                    'refresh': str(refresh),
+                    'access': str(refresh.access_token),
+                },
+                'message': 'Login exitoso'
+            }, status=status.HTTP_200_OK)
         else:
             return Response({
                 'error': 'Credenciales inválidas.'

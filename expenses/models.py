@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import MinValueValidator
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
+from decimal import Decimal
 
 
 class Expense(models.Model):
@@ -42,7 +43,7 @@ class Expense(models.Model):
         _('monto'),
         max_digits=10,           # Máximo 10 dígitos en total
         decimal_places=2,        # 2 decimales (99999999.99)
-        validators=[MinValueValidator(0.01)],  # Mínimo 0.01
+        validators=[MinValueValidator(Decimal('0.01'))],  # Mínimo 0.01
         help_text=_('Monto del gasto en pesos')
     )
     
